@@ -4,7 +4,7 @@ Shader "Custom/fractalShader" {
         cX("cX", Float) = -0.7
         cY("cY", Float) = 0.27
 
-        maxIter("Max Iterations", Int) = 200
+        maxIter("Max Iterations", Int) = 2000
 
     }
 
@@ -53,19 +53,23 @@ Shader "Custom/fractalShader" {
                 //float2 Zinit = Z;
 
                 int depth = 0;
-                while ((Z.x * Z.x) + (Z.y * Z.y) < 4 && depth < maxIter) {
-                    float tmp = Z.x * Z.x - Z.y * Z.y;
-                    Z.y = 2 * Z.x * Z.y + cY;
-                    Z.x = tmp + cX;
+                while ((depth < maxIter) && (pow(Z.x, 2) + pow(Z.y, 2) < 4) ) {
+                    float2 oldZ = Z;
+
+                    Z.x = pow(oldZ.x, 2) - pow(oldZ.y, 2) + cX;
+                    Z.y = oldZ.x * oldZ.y * 2 + cY;
+
 
                     depth++;
                 }
 
 
+                if (depth == maxIter) {
+                    //return half4(0, 1, 0, 1);
+                }
 
 
-
-                return half4(depth / maxIter, 0, 0, 1);
+                return half4(float(depth) / maxIter, 0, 0, 1);
             }
 
 
